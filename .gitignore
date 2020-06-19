@@ -8,7 +8,7 @@ config.txt
 # Virtual envoronment
 env
 
-# Some other files that mustn't be in remote repository
+# Some other files that mustn't be in the remote repository
 __pycache__
 build
 dist

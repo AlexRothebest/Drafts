@@ -1,4 +1,5 @@
 from mechanicalsoup import StatefulBrowser
+from fuzzywuzzy import fuzz
 from threading import Thread
 import xlrd
 import time
@@ -57,7 +58,7 @@ class CompanyData:
     def __init__(self, data):
         self.name = data[0].strip()
         self.category = data[1].strip()
-        self.tag = data[2].strip()
+        self.tags = data[2].strip().split('\n')
         self.logo_link = data[3].strip() if len(data[3].strip()) > 3 else ''
         self.website = data[4].strip() if len(data[4].strip()) > 3 else ''
         self.email = data[5].strip() if len(data[5].strip()) > 3 else ''
@@ -121,18 +122,31 @@ def add_companies(companies):
                 browser['acf[field_5ec52f4834bd5]'] = company.twitter
                 browser['acf[field_5ec4e629c23f6]'] = company.products
 
+                tag_labels = browser.get_current_page().select('#type-all .selectit')
+                tag_input_values = []
+                for tag in company.tags:
+                    best_value = 0
+                    max_ratio = 0
+                    for tag_label in tag_labels:
+                        ratio = fuzz.ratio(tag, tag_label.text.strip())
+                        if ratio > max_ratio:
+                            max_ratio = ratio
+                            best_value = tag_label.select_one('input')['value']
+                    
+                    tag_input_values.append(best_value)
+
+                browser['tax_input[type][]'] = tag_input_values
+
                 browser.submit_selected()
 
                 print(company.name)
 
                 break
             except Exception as error:
-                raise error
+                # raise error
                 print("Error!-----------------------------------------------------------------------------------")
                 print(repr(error))
                 print()
-
-        raise Exception('dfgkporegkoek')
 
     number_of_finished_threads += 1
 
