@@ -1,0 +1,21 @@
+# Config file
+config.txt
+
+# Excel files
+*.xls
+*.xlsx
+
+# Virtual envoronment
+env
+
+# Some other files that mustn't be in remote repository
+__pycache__
+build
+dist
+*spec
+
+*.zip
+
+.vscode
+
+*.html
